@@ -51,18 +51,27 @@ namespace GPGDesktop
       System.Windows.Forms.Button btnEncrypt;
       System.Windows.Forms.Button btnSign;
       System.Windows.Forms.Button btnSignEncrypt;
-      System.Windows.Forms.Button btnVerify;
-      System.Windows.Forms.Button btnDecrypt;
       System.Windows.Forms.Button btnOpen;
       System.Windows.Forms.Button btnSave;
-      System.Windows.Forms.ListView homeList;
+      System.Windows.Forms.ImageList homeIcons;
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+      System.Windows.Forms.ToolStripMenuItem gpgMenu;
+      System.Windows.Forms.ToolStripMenuItem encryptMenuItem;
+      System.Windows.Forms.ToolStripMenuItem decryptMenuItem;
+      System.Windows.Forms.ToolStripMenuItem generateMenuItem;
+      System.Windows.Forms.ToolStripMenuItem optionsMenuItem;
+      System.Windows.Forms.ToolStripMenuItem aboutMenuItem;
+      System.Windows.Forms.ToolStripMenuItem exitMenuItem;
+      System.Windows.Forms.Button btnSymmetric;
       System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Encrypt/Sign Data", 0);
       System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Decrypt/Verify Data", 1);
       System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Generate Your Key", 2);
       System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Options", 3);
-      System.Windows.Forms.ImageList homeIcons;
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-      this.mainMenu = new System.Windows.Forms.MenuStrip();
+      System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("About", 4);
+      this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+      this.btnVerify = new System.Windows.Forms.Button();
+      this.btnDecrypt = new System.Windows.Forms.Button();
+      this.homeList = new System.Windows.Forms.ListView();
       this.keysTab = new System.Windows.Forms.TabPage();
       this.btnClearSearch = new System.Windows.Forms.Button();
       this.txtSearch = new System.Windows.Forms.TextBox();
@@ -71,25 +80,32 @@ namespace GPGDesktop
       this.homeTab = new System.Windows.Forms.TabPage();
       this.padTab = new System.Windows.Forms.TabPage();
       this.txtPad = new System.Windows.Forms.TextBox();
+      this.mainMenu = new System.Windows.Forms.MenuStrip();
       lblSearch = new System.Windows.Forms.Label();
       btnEncrypt = new System.Windows.Forms.Button();
       btnSign = new System.Windows.Forms.Button();
       btnSignEncrypt = new System.Windows.Forms.Button();
-      btnVerify = new System.Windows.Forms.Button();
-      btnDecrypt = new System.Windows.Forms.Button();
       btnOpen = new System.Windows.Forms.Button();
       btnSave = new System.Windows.Forms.Button();
-      homeList = new System.Windows.Forms.ListView();
       homeIcons = new System.Windows.Forms.ImageList(this.components);
+      gpgMenu = new System.Windows.Forms.ToolStripMenuItem();
+      encryptMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      decryptMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      generateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      optionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      btnSymmetric = new System.Windows.Forms.Button();
       this.keysTab.SuspendLayout();
       this.tabs.SuspendLayout();
       this.homeTab.SuspendLayout();
       this.padTab.SuspendLayout();
+      this.mainMenu.SuspendLayout();
       this.SuspendLayout();
       // 
       // lblSearch
       // 
-      lblSearch.Location = new System.Drawing.Point(2, 10);
+      lblSearch.Location = new System.Drawing.Point(2, 8);
       lblSearch.Name = "lblSearch";
       lblSearch.Size = new System.Drawing.Size(84, 15);
       lblSearch.TabIndex = 1;
@@ -99,78 +115,168 @@ namespace GPGDesktop
       // btnEncrypt
       // 
       btnEncrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      btnEncrypt.Location = new System.Drawing.Point(0, 522);
+      btnEncrypt.Location = new System.Drawing.Point(0, 342);
       btnEncrypt.Name = "btnEncrypt";
       btnEncrypt.Size = new System.Drawing.Size(75, 23);
       btnEncrypt.TabIndex = 1;
-      btnEncrypt.Text = "Encrypt";
+      btnEncrypt.Text = "&Encrypt";
       btnEncrypt.UseVisualStyleBackColor = true;
+      btnEncrypt.Click += new System.EventHandler(this.btnEncrypt_Click);
       // 
       // btnSign
       // 
       btnSign.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      btnSign.Location = new System.Drawing.Point(81, 522);
+      btnSign.Location = new System.Drawing.Point(237, 342);
       btnSign.Name = "btnSign";
       btnSign.Size = new System.Drawing.Size(75, 23);
       btnSign.TabIndex = 2;
-      btnSign.Text = "Sign";
+      btnSign.Text = "&Sign";
       btnSign.UseVisualStyleBackColor = true;
       // 
       // btnSignEncrypt
       // 
       btnSignEncrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      btnSignEncrypt.Location = new System.Drawing.Point(162, 522);
+      btnSignEncrypt.Location = new System.Drawing.Point(318, 342);
       btnSignEncrypt.Name = "btnSignEncrypt";
       btnSignEncrypt.Size = new System.Drawing.Size(132, 23);
       btnSignEncrypt.TabIndex = 3;
-      btnSignEncrypt.Text = "Sign and Encrypt";
+      btnSignEncrypt.Text = "Sign &and Encrypt";
       btnSignEncrypt.UseVisualStyleBackColor = true;
-      // 
-      // btnVerify
-      // 
-      btnVerify.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      btnVerify.Enabled = false;
-      btnVerify.Location = new System.Drawing.Point(381, 522);
-      btnVerify.Name = "btnVerify";
-      btnVerify.Size = new System.Drawing.Size(132, 23);
-      btnVerify.TabIndex = 5;
-      btnVerify.Text = "Verify Signature";
-      btnVerify.UseVisualStyleBackColor = true;
-      // 
-      // btnDecrypt
-      // 
-      btnDecrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      btnDecrypt.Enabled = false;
-      btnDecrypt.Location = new System.Drawing.Point(300, 522);
-      btnDecrypt.Name = "btnDecrypt";
-      btnDecrypt.Size = new System.Drawing.Size(75, 23);
-      btnDecrypt.TabIndex = 4;
-      btnDecrypt.Text = "Decrypt";
-      btnDecrypt.UseVisualStyleBackColor = true;
       // 
       // btnOpen
       // 
       btnOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      btnOpen.Location = new System.Drawing.Point(519, 522);
+      btnOpen.Location = new System.Drawing.Point(675, 342);
       btnOpen.Name = "btnOpen";
       btnOpen.Size = new System.Drawing.Size(75, 23);
       btnOpen.TabIndex = 6;
-      btnOpen.Text = "Open";
+      btnOpen.Text = "&Open";
       btnOpen.UseVisualStyleBackColor = true;
+      btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
       // 
       // btnSave
       // 
       btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      btnSave.Location = new System.Drawing.Point(600, 522);
+      btnSave.Location = new System.Drawing.Point(756, 342);
       btnSave.Name = "btnSave";
       btnSave.Size = new System.Drawing.Size(75, 23);
       btnSave.TabIndex = 7;
-      btnSave.Text = "Save";
+      btnSave.Text = "&Save";
       btnSave.UseVisualStyleBackColor = true;
+      btnSave.Click += new System.EventHandler(this.btnSave_Click);
+      // 
+      // homeIcons
+      // 
+      homeIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("homeIcons.ImageStream")));
+      homeIcons.TransparentColor = System.Drawing.Color.Transparent;
+      homeIcons.Images.SetKeyName(0, "lock.png");
+      homeIcons.Images.SetKeyName(1, "unlock.png");
+      homeIcons.Images.SetKeyName(2, "key.png");
+      homeIcons.Images.SetKeyName(3, "wrench.png");
+      homeIcons.Images.SetKeyName(4, "info.png");
+      // 
+      // gpgMenu
+      // 
+      gpgMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            encryptMenuItem,
+            decryptMenuItem,
+            generateMenuItem,
+            optionsMenuItem,
+            aboutMenuItem,
+            this.toolStripMenuItem1,
+            exitMenuItem});
+      gpgMenu.Name = "gpgMenu";
+      gpgMenu.Size = new System.Drawing.Size(39, 20);
+      gpgMenu.Text = "&GPG";
+      // 
+      // encryptMenuItem
+      // 
+      encryptMenuItem.Name = "encryptMenuItem";
+      encryptMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+      encryptMenuItem.Size = new System.Drawing.Size(221, 22);
+      encryptMenuItem.Text = "&Encrypt/Sign Data...";
+      encryptMenuItem.Click += new System.EventHandler(this.encryptMenuItem_Click);
+      // 
+      // decryptMenuItem
+      // 
+      decryptMenuItem.Name = "decryptMenuItem";
+      decryptMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+      decryptMenuItem.Size = new System.Drawing.Size(221, 22);
+      decryptMenuItem.Text = "&Decrypt/Verify Data...";
+      decryptMenuItem.Click += new System.EventHandler(this.decryptMenuItem_Click);
+      // 
+      // generateMenuItem
+      // 
+      generateMenuItem.Name = "generateMenuItem";
+      generateMenuItem.Size = new System.Drawing.Size(221, 22);
+      generateMenuItem.Text = "&Generate Your Key...";
+      generateMenuItem.Click += new System.EventHandler(this.generateMenuItem_Click);
+      // 
+      // optionsMenuItem
+      // 
+      optionsMenuItem.Name = "optionsMenuItem";
+      optionsMenuItem.Size = new System.Drawing.Size(221, 22);
+      optionsMenuItem.Text = "&Options...";
+      optionsMenuItem.Click += new System.EventHandler(this.optionsMenuItem_Click);
+      // 
+      // aboutMenuItem
+      // 
+      aboutMenuItem.Name = "aboutMenuItem";
+      aboutMenuItem.Size = new System.Drawing.Size(221, 22);
+      aboutMenuItem.Text = "&About...";
+      aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
+      // 
+      // toolStripMenuItem1
+      // 
+      this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+      this.toolStripMenuItem1.Size = new System.Drawing.Size(218, 6);
+      // 
+      // exitMenuItem
+      // 
+      exitMenuItem.Name = "exitMenuItem";
+      exitMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+      exitMenuItem.Size = new System.Drawing.Size(221, 22);
+      exitMenuItem.Text = "E&xit";
+      exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
+      // 
+      // btnSymmetric
+      // 
+      btnSymmetric.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      btnSymmetric.Location = new System.Drawing.Point(81, 342);
+      btnSymmetric.Name = "btnSymmetric";
+      btnSymmetric.Size = new System.Drawing.Size(150, 23);
+      btnSymmetric.TabIndex = 8;
+      btnSymmetric.Text = "Encrypt w/ &Password";
+      btnSymmetric.UseVisualStyleBackColor = true;
+      btnSymmetric.Click += new System.EventHandler(this.btnSymmetric_Click);
+      // 
+      // btnVerify
+      // 
+      this.btnVerify.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.btnVerify.Enabled = false;
+      this.btnVerify.Location = new System.Drawing.Point(537, 342);
+      this.btnVerify.Name = "btnVerify";
+      this.btnVerify.Size = new System.Drawing.Size(132, 23);
+      this.btnVerify.TabIndex = 5;
+      this.btnVerify.Text = "&Verify Signatures";
+      this.btnVerify.UseVisualStyleBackColor = true;
+      this.btnVerify.Click += new System.EventHandler(this.btnVerify_Click);
+      // 
+      // btnDecrypt
+      // 
+      this.btnDecrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.btnDecrypt.Enabled = false;
+      this.btnDecrypt.Location = new System.Drawing.Point(456, 342);
+      this.btnDecrypt.Name = "btnDecrypt";
+      this.btnDecrypt.Size = new System.Drawing.Size(75, 23);
+      this.btnDecrypt.TabIndex = 4;
+      this.btnDecrypt.Text = "&Decrypt";
+      this.btnDecrypt.UseVisualStyleBackColor = true;
+      this.btnDecrypt.Click += new System.EventHandler(this.btnDecrypt_Click);
       // 
       // homeList
       // 
-      homeList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+      this.homeList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       listViewItem1.ToolTipText = "Encrypt data to protect its confidentiality, and/or sign it to protect its authen" +
@@ -179,26 +285,22 @@ namespace GPGDesktop
       listViewItem3.ToolTipText = "Generate a new key pair for yourself, so that you can sign documents and receive " +
     "encrypted data.";
       listViewItem4.ToolTipText = "Change GPG Desktop configuration options.";
-      homeList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+      listViewItem5.ToolTipText = "About this program.";
+      this.homeList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
             listViewItem1,
             listViewItem2,
             listViewItem3,
-            listViewItem4});
-      homeList.LargeImageList = homeIcons;
-      homeList.Location = new System.Drawing.Point(0, 0);
-      homeList.MultiSelect = false;
-      homeList.Name = "homeList";
-      homeList.Size = new System.Drawing.Size(866, 365);
-      homeList.TabIndex = 0;
-      homeList.UseCompatibleStateImageBehavior = false;
-      homeList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.homeList_MouseDoubleClick);
-      // 
-      // mainMenu
-      // 
-      this.mainMenu.Location = new System.Drawing.Point(0, 0);
-      this.mainMenu.Name = "mainMenu";
-      this.mainMenu.Size = new System.Drawing.Size(874, 24);
-      this.mainMenu.TabIndex = 0;
+            listViewItem4,
+            listViewItem5});
+      this.homeList.LargeImageList = homeIcons;
+      this.homeList.Location = new System.Drawing.Point(0, 0);
+      this.homeList.MultiSelect = false;
+      this.homeList.Name = "homeList";
+      this.homeList.Size = new System.Drawing.Size(831, 365);
+      this.homeList.TabIndex = 0;
+      this.homeList.UseCompatibleStateImageBehavior = false;
+      this.homeList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.homeList_MouseDoubleClick);
+      this.homeList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.homeList_KeyDown);
       // 
       // keysTab
       // 
@@ -208,7 +310,7 @@ namespace GPGDesktop
       this.keysTab.Controls.Add(this.keyList);
       this.keysTab.Location = new System.Drawing.Point(4, 25);
       this.keysTab.Name = "keysTab";
-      this.keysTab.Size = new System.Drawing.Size(866, 365);
+      this.keysTab.Size = new System.Drawing.Size(831, 365);
       this.keysTab.TabIndex = 1;
       this.keysTab.Text = "Manage Keys";
       this.keysTab.UseVisualStyleBackColor = true;
@@ -216,7 +318,7 @@ namespace GPGDesktop
       // btnClearSearch
       // 
       this.btnClearSearch.Enabled = false;
-      this.btnClearSearch.Location = new System.Drawing.Point(328, 7);
+      this.btnClearSearch.Location = new System.Drawing.Point(328, 5);
       this.btnClearSearch.Name = "btnClearSearch";
       this.btnClearSearch.Size = new System.Drawing.Size(52, 21);
       this.btnClearSearch.TabIndex = 3;
@@ -225,7 +327,7 @@ namespace GPGDesktop
       // 
       // txtSearch
       // 
-      this.txtSearch.Location = new System.Drawing.Point(87, 7);
+      this.txtSearch.Location = new System.Drawing.Point(87, 5);
       this.txtSearch.Name = "txtSearch";
       this.txtSearch.Size = new System.Drawing.Size(235, 21);
       this.txtSearch.TabIndex = 2;
@@ -242,7 +344,7 @@ namespace GPGDesktop
       this.keyList.Location = new System.Drawing.Point(0, 34);
       this.keyList.Name = "keyList";
       this.keyList.PGP = null;
-      this.keyList.Size = new System.Drawing.Size(866, 512);
+      this.keyList.Size = new System.Drawing.Size(831, 512);
       this.keyList.TabIndex = 0;
       this.keyList.UseCompatibleStateImageBehavior = false;
       this.keyList.View = System.Windows.Forms.View.Details;
@@ -259,34 +361,35 @@ namespace GPGDesktop
       this.tabs.Multiline = true;
       this.tabs.Name = "tabs";
       this.tabs.SelectedIndex = 0;
-      this.tabs.Size = new System.Drawing.Size(874, 394);
+      this.tabs.Size = new System.Drawing.Size(839, 394);
       this.tabs.TabIndex = 1;
       // 
       // homeTab
       // 
-      this.homeTab.Controls.Add(homeList);
+      this.homeTab.Controls.Add(this.homeList);
       this.homeTab.Location = new System.Drawing.Point(4, 25);
       this.homeTab.Name = "homeTab";
-      this.homeTab.Size = new System.Drawing.Size(866, 365);
+      this.homeTab.Size = new System.Drawing.Size(831, 365);
       this.homeTab.TabIndex = 3;
       this.homeTab.Text = "Home";
       this.homeTab.UseVisualStyleBackColor = true;
       // 
       // padTab
       // 
+      this.padTab.Controls.Add(btnSymmetric);
       this.padTab.Controls.Add(btnSave);
       this.padTab.Controls.Add(btnOpen);
-      this.padTab.Controls.Add(btnVerify);
-      this.padTab.Controls.Add(btnDecrypt);
+      this.padTab.Controls.Add(this.btnVerify);
+      this.padTab.Controls.Add(this.btnDecrypt);
       this.padTab.Controls.Add(btnSignEncrypt);
       this.padTab.Controls.Add(btnSign);
       this.padTab.Controls.Add(btnEncrypt);
       this.padTab.Controls.Add(this.txtPad);
       this.padTab.Location = new System.Drawing.Point(4, 25);
       this.padTab.Name = "padTab";
-      this.padTab.Size = new System.Drawing.Size(866, 365);
+      this.padTab.Size = new System.Drawing.Size(831, 365);
       this.padTab.TabIndex = 4;
-      this.padTab.Text = "GPG Pad";
+      this.padTab.Text = "Scratch Pad";
       this.padTab.UseVisualStyleBackColor = true;
       // 
       // txtPad
@@ -294,35 +397,37 @@ namespace GPGDesktop
       this.txtPad.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.txtPad.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txtPad.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.txtPad.Location = new System.Drawing.Point(0, 0);
       this.txtPad.MaxLength = 0;
       this.txtPad.Multiline = true;
       this.txtPad.Name = "txtPad";
-      this.txtPad.Size = new System.Drawing.Size(866, 516);
+      this.txtPad.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+      this.txtPad.Size = new System.Drawing.Size(831, 336);
       this.txtPad.TabIndex = 0;
+      this.txtPad.TextChanged += new System.EventHandler(this.txtPad_TextChanged);
+      this.txtPad.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtPad_KeyDown);
       // 
-      // homeIcons
+      // mainMenu
       // 
-      homeIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("homeIcons.ImageStream")));
-      homeIcons.TransparentColor = System.Drawing.Color.Transparent;
-      homeIcons.Images.SetKeyName(0, "lock.png");
-      homeIcons.Images.SetKeyName(1, "unlock.png");
-      homeIcons.Images.SetKeyName(2, "key.png");
-      homeIcons.Images.SetKeyName(3, "wrench.png");
-      homeIcons.Images.SetKeyName(4, "keys.gif");
+      this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            gpgMenu});
+      this.mainMenu.Location = new System.Drawing.Point(0, 0);
+      this.mainMenu.Name = "mainMenu";
+      this.mainMenu.Size = new System.Drawing.Size(839, 24);
+      this.mainMenu.TabIndex = 0;
       // 
       // MainForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(874, 418);
+      this.ClientSize = new System.Drawing.Size(839, 418);
       this.Controls.Add(this.tabs);
       this.Controls.Add(this.mainMenu);
       this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MainMenuStrip = this.mainMenu;
-      this.MinimumSize = new System.Drawing.Size(735, 250);
+      this.MinimumSize = new System.Drawing.Size(847, 250);
       this.Name = "MainForm";
       this.Text = "GPG Desktop";
       this.keysTab.ResumeLayout(false);
@@ -331,6 +436,8 @@ namespace GPGDesktop
       this.homeTab.ResumeLayout(false);
       this.padTab.ResumeLayout(false);
       this.padTab.PerformLayout();
+      this.mainMenu.ResumeLayout(false);
+      this.mainMenu.PerformLayout();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -338,7 +445,6 @@ namespace GPGDesktop
 
     #endregion
 
-    private System.Windows.Forms.MenuStrip mainMenu;
     private System.Windows.Forms.TabPage keysTab;
     private AdamMil.Security.UI.KeyManagementList keyList;
     private System.Windows.Forms.TabControl tabs;
@@ -347,5 +453,10 @@ namespace GPGDesktop
     private System.Windows.Forms.Button btnClearSearch;
     private System.Windows.Forms.TextBox txtSearch;
     private System.Windows.Forms.TextBox txtPad;
+    private System.Windows.Forms.ListView homeList;
+    private System.Windows.Forms.MenuStrip mainMenu;
+    private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+    private System.Windows.Forms.Button btnVerify;
+    private System.Windows.Forms.Button btnDecrypt;
   }
 }

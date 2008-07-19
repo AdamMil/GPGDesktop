@@ -49,14 +49,14 @@ namespace GPGDesktop
       System.Windows.Forms.Label lblRepeat;
       this.wizard = new AdamMil.UI.Wizard.Wizard();
       this.startStep = new AdamMil.UI.Wizard.StartStep();
-      this.inputStep = new AdamMil.UI.Wizard.IntermediateStep();
+      this.inputStep = new AdamMil.UI.Wizard.MiddleStep();
       this.txtInput = new System.Windows.Forms.TextBox();
       this.rbManual = new System.Windows.Forms.RadioButton();
       this.btnSourceBrowse = new System.Windows.Forms.Button();
       this.txtSourceFile = new System.Windows.Forms.TextBox();
       this.rbSourceClipboard = new System.Windows.Forms.RadioButton();
       this.rbSourceFile = new System.Windows.Forms.RadioButton();
-      this.signStep = new AdamMil.UI.Wizard.IntermediateStep();
+      this.signStep = new AdamMil.UI.Wizard.MiddleStep();
       this.lblCantSign = new System.Windows.Forms.Label();
       this.cmbSigningKey = new System.Windows.Forms.ComboBox();
       this.lblSigningKey = new System.Windows.Forms.Label();
@@ -65,7 +65,8 @@ namespace GPGDesktop
       this.rbDetachedSig = new System.Windows.Forms.RadioButton();
       this.rbEmbedSig = new System.Windows.Forms.RadioButton();
       this.rbNoSign = new System.Windows.Forms.RadioButton();
-      this.encryptStep = new AdamMil.UI.Wizard.IntermediateStep();
+      this.encryptStep = new AdamMil.UI.Wizard.MiddleStep();
+      this.txtPassword2 = new AdamMil.Security.UI.SecureTextBox();
       this.chkEncryptToSelf = new System.Windows.Forms.CheckBox();
       this.cmbAlsoEncryptTo = new System.Windows.Forms.ComboBox();
       this.lblStrength = new System.Windows.Forms.Label();
@@ -75,7 +76,8 @@ namespace GPGDesktop
       this.rbAsymmetric = new System.Windows.Forms.RadioButton();
       this.rbSymmetric = new System.Windows.Forms.RadioButton();
       this.rbNoEncrypt = new System.Windows.Forms.RadioButton();
-      this.saveStep = new AdamMil.UI.Wizard.IntermediateStep();
+      this.saveStep = new AdamMil.UI.Wizard.MiddleStep();
+      this.progressBar = new System.Windows.Forms.ProgressBar();
       this.rbSaveNear = new System.Windows.Forms.RadioButton();
       this.chkAscii = new System.Windows.Forms.CheckBox();
       this.rbSaveFile = new System.Windows.Forms.RadioButton();
@@ -83,13 +85,23 @@ namespace GPGDesktop
       this.txtSaveFile = new System.Windows.Forms.TextBox();
       this.rbOverwrite = new System.Windows.Forms.RadioButton();
       this.rbSaveClipboard = new System.Windows.Forms.RadioButton();
-      this.txtPassword2 = new AdamMil.Security.UI.SecureTextBox();
       lblRepeat = new System.Windows.Forms.Label();
       this.inputStep.SuspendLayout();
       this.signStep.SuspendLayout();
       this.encryptStep.SuspendLayout();
       this.saveStep.SuspendLayout();
       this.SuspendLayout();
+      // 
+      // lblRepeat
+      // 
+      lblRepeat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      lblRepeat.Location = new System.Drawing.Point(234, 144);
+      lblRepeat.Name = "lblRepeat";
+      lblRepeat.Size = new System.Drawing.Size(265, 21);
+      lblRepeat.TabIndex = 5;
+      lblRepeat.Text = "(repeat password)";
+      lblRepeat.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // wizard
       // 
@@ -168,7 +180,7 @@ namespace GPGDesktop
       this.btnSourceBrowse.Name = "btnSourceBrowse";
       this.btnSourceBrowse.Size = new System.Drawing.Size(67, 21);
       this.btnSourceBrowse.TabIndex = 3;
-      this.btnSourceBrowse.Text = "&Browse";
+      this.btnSourceBrowse.Text = "B&rowse";
       this.btnSourceBrowse.UseVisualStyleBackColor = true;
       this.btnSourceBrowse.Click += new System.EventHandler(this.btnSourceBrowse_Click);
       // 
@@ -273,7 +285,7 @@ namespace GPGDesktop
       this.btnSigBrowse.Name = "btnSigBrowse";
       this.btnSigBrowse.Size = new System.Drawing.Size(67, 21);
       this.btnSigBrowse.TabIndex = 4;
-      this.btnSigBrowse.Text = "&Browse";
+      this.btnSigBrowse.Text = "B&rowse";
       this.btnSigBrowse.UseVisualStyleBackColor = true;
       this.btnSigBrowse.Click += new System.EventHandler(this.btnSigBrowse_Click);
       // 
@@ -349,6 +361,16 @@ namespace GPGDesktop
       this.encryptStep.StepDisplayed += new System.EventHandler(this.encryptStep_StepDisplayed);
       this.encryptStep.NextButtonClicked += new System.ComponentModel.CancelEventHandler(this.encryptStep_NextButtonClicked);
       // 
+      // txtPassword2
+      // 
+      this.txtPassword2.Enabled = false;
+      this.txtPassword2.ImeMode = System.Windows.Forms.ImeMode.Disable;
+      this.txtPassword2.Location = new System.Drawing.Point(29, 144);
+      this.txtPassword2.Name = "txtPassword2";
+      this.txtPassword2.Size = new System.Drawing.Size(198, 21);
+      this.txtPassword2.TabIndex = 4;
+      this.txtPassword2.UseSystemPasswordChar = true;
+      // 
       // chkEncryptToSelf
       // 
       this.chkEncryptToSelf.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -403,7 +425,7 @@ namespace GPGDesktop
       this.btnRecipBrowse.Name = "btnRecipBrowse";
       this.btnRecipBrowse.Size = new System.Drawing.Size(67, 21);
       this.btnRecipBrowse.TabIndex = 8;
-      this.btnRecipBrowse.Text = "&Browse";
+      this.btnRecipBrowse.Text = "B&rowse";
       this.btnRecipBrowse.UseVisualStyleBackColor = true;
       this.btnRecipBrowse.Click += new System.EventHandler(this.btnRecipBrowse_Click);
       // 
@@ -429,7 +451,7 @@ namespace GPGDesktop
       this.rbAsymmetric.Size = new System.Drawing.Size(487, 17);
       this.rbAsymmetric.TabIndex = 6;
       this.rbAsymmetric.TabStop = true;
-      this.rbAsymmetric.Text = "Encrypt to &recipients using their public keys:";
+      this.rbAsymmetric.Text = "Encrypt to recipients using their public &keys:";
       this.rbAsymmetric.UseVisualStyleBackColor = true;
       this.rbAsymmetric.CheckedChanged += new System.EventHandler(this.rbAsymmetric_CheckedChanged);
       // 
@@ -459,6 +481,7 @@ namespace GPGDesktop
       // 
       // saveStep
       // 
+      this.saveStep.Controls.Add(this.progressBar);
       this.saveStep.Controls.Add(this.rbSaveNear);
       this.saveStep.Controls.Add(this.chkAscii);
       this.saveStep.Controls.Add(this.rbSaveFile);
@@ -476,6 +499,13 @@ namespace GPGDesktop
       this.saveStep.StepDisplayed += new System.EventHandler(this.saveStep_StepDisplayed);
       this.saveStep.FinishButtonClicked += new System.ComponentModel.CancelEventHandler(this.saveStep_FinishButtonClicked);
       // 
+      // progressBar
+      // 
+      this.progressBar.Location = new System.Drawing.Point(4, 319);
+      this.progressBar.Name = "progressBar";
+      this.progressBar.Size = new System.Drawing.Size(502, 23);
+      this.progressBar.TabIndex = 7;
+      // 
       // rbSaveNear
       // 
       this.rbSaveNear.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -486,7 +516,7 @@ namespace GPGDesktop
       this.rbSaveNear.Size = new System.Drawing.Size(487, 17);
       this.rbSaveNear.TabIndex = 2;
       this.rbSaveNear.TabStop = true;
-      this.rbSaveNear.Text = "Save in the source file directory with a .pgp file &extension.";
+      this.rbSaveNear.Text = "Save in the source file directory with a new file &extension.";
       this.rbSaveNear.UseVisualStyleBackColor = true;
       // 
       // chkAscii
@@ -507,7 +537,7 @@ namespace GPGDesktop
       this.rbSaveFile.Name = "rbSaveFile";
       this.rbSaveFile.Size = new System.Drawing.Size(487, 17);
       this.rbSaveFile.TabIndex = 3;
-      this.rbSaveFile.Text = "Save it in a &file:";
+      this.rbSaveFile.Text = "&Save it in a file:";
       this.rbSaveFile.UseVisualStyleBackColor = true;
       this.rbSaveFile.CheckedChanged += new System.EventHandler(this.rbSaveFile_CheckedChanged);
       // 
@@ -518,7 +548,7 @@ namespace GPGDesktop
       this.btnSaveFileBrowse.Name = "btnSaveFileBrowse";
       this.btnSaveFileBrowse.Size = new System.Drawing.Size(67, 21);
       this.btnSaveFileBrowse.TabIndex = 5;
-      this.btnSaveFileBrowse.Text = "&Browse";
+      this.btnSaveFileBrowse.Text = "B&rowse";
       this.btnSaveFileBrowse.UseVisualStyleBackColor = true;
       this.btnSaveFileBrowse.Click += new System.EventHandler(this.btnSaveFileBrowse_Click);
       // 
@@ -555,27 +585,6 @@ namespace GPGDesktop
       this.rbSaveClipboard.UseVisualStyleBackColor = true;
       this.rbSaveClipboard.CheckedChanged += new System.EventHandler(this.rbSaveClipboard_CheckedChanged);
       // 
-      // txtPassword2
-      // 
-      this.txtPassword2.Enabled = false;
-      this.txtPassword2.ImeMode = System.Windows.Forms.ImeMode.Disable;
-      this.txtPassword2.Location = new System.Drawing.Point(29, 144);
-      this.txtPassword2.Name = "txtPassword2";
-      this.txtPassword2.Size = new System.Drawing.Size(198, 21);
-      this.txtPassword2.TabIndex = 4;
-      this.txtPassword2.UseSystemPasswordChar = true;
-      // 
-      // lblRepeat
-      // 
-      lblRepeat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-      lblRepeat.Location = new System.Drawing.Point(234, 144);
-      lblRepeat.Name = "lblRepeat";
-      lblRepeat.Size = new System.Drawing.Size(265, 21);
-      lblRepeat.TabIndex = 5;
-      lblRepeat.Text = "(repeat password)";
-      lblRepeat.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
       // EncryptSignWizard
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -604,14 +613,14 @@ namespace GPGDesktop
 
     private AdamMil.UI.Wizard.Wizard wizard;
     private AdamMil.UI.Wizard.StartStep startStep;
-    private AdamMil.UI.Wizard.IntermediateStep inputStep;
+    private AdamMil.UI.Wizard.MiddleStep inputStep;
     private System.Windows.Forms.Button btnSourceBrowse;
     private System.Windows.Forms.TextBox txtSourceFile;
     private System.Windows.Forms.RadioButton rbSourceFile;
     private System.Windows.Forms.RadioButton rbSourceClipboard;
     private System.Windows.Forms.RadioButton rbManual;
     private System.Windows.Forms.TextBox txtInput;
-    private AdamMil.UI.Wizard.IntermediateStep signStep;
+    private AdamMil.UI.Wizard.MiddleStep signStep;
     private System.Windows.Forms.ComboBox cmbSigningKey;
     private System.Windows.Forms.Label lblSigningKey;
     private System.Windows.Forms.Button btnSigBrowse;
@@ -619,7 +628,7 @@ namespace GPGDesktop
     private System.Windows.Forms.RadioButton rbDetachedSig;
     private System.Windows.Forms.RadioButton rbEmbedSig;
     private System.Windows.Forms.RadioButton rbNoSign;
-    private AdamMil.UI.Wizard.IntermediateStep encryptStep;
+    private AdamMil.UI.Wizard.MiddleStep encryptStep;
     private AdamMil.Security.UI.SecureTextBox txtPassword;
     private System.Windows.Forms.Button btnRecipBrowse;
     private System.Windows.Forms.TextBox txtRecipients;
@@ -627,7 +636,7 @@ namespace GPGDesktop
     private System.Windows.Forms.RadioButton rbSymmetric;
     private System.Windows.Forms.RadioButton rbNoEncrypt;
     private System.Windows.Forms.Label lblStrength;
-    private AdamMil.UI.Wizard.IntermediateStep saveStep;
+    private AdamMil.UI.Wizard.MiddleStep saveStep;
     private System.Windows.Forms.RadioButton rbSaveFile;
     private System.Windows.Forms.Button btnSaveFileBrowse;
     private System.Windows.Forms.TextBox txtSaveFile;
@@ -639,5 +648,6 @@ namespace GPGDesktop
     private System.Windows.Forms.CheckBox chkEncryptToSelf;
     private System.Windows.Forms.ComboBox cmbAlsoEncryptTo;
     private AdamMil.Security.UI.SecureTextBox txtPassword2;
+    private System.Windows.Forms.ProgressBar progressBar;
   }
 }

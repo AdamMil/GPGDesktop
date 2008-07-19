@@ -34,6 +34,12 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="EncryptSignWizard.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -49,6 +55,10 @@
     <Compile Include="PasswordCache.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AboutBox.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EncryptSignWizard.resx">
       <SubType>Designer</SubType>
       <DependentUpon>EncryptSignWizard.cs</DependentUpon>
@@ -88,6 +98,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\GPG.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\info.png" />
+    <Content Include="Resources\key.png" />
+    <Content Include="Resources\lock.png" />
+    <Content Include="Resources\page_lock.png" />
+    <Content Include="Resources\unlock.png" />
+    <Content Include="Resources\wrench.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
