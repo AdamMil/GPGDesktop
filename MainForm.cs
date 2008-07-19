@@ -18,17 +18,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using System;
 using System.Windows.Forms;
+using AdamMil.Security.PGP;
 
 namespace GPGDesktop
 {
 
 partial class MainForm : Form
 {
-  public MainForm()
+  MainForm()
   {
     InitializeComponent();
-    Icon = GPGDesktop.Properties.Resources.GPG_Icon;
   }
+
+  public MainForm(PGPSystem pgp)
+  {
+    if(pgp == null) throw new ArgumentNullException();
+    this.pgp = pgp;
+    InitializeComponent();
+  }
+
+  void homeList_MouseDoubleClick(object sender, MouseEventArgs e)
+  {
+    if(e.Button == MouseButtons.Left) ActivateIcon();
+  }
+
+  readonly PGPSystem pgp;
 }
 
 } // namespace GPGDesktop

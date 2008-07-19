@@ -46,6 +46,7 @@ namespace GPGDesktop
     /// </summary>
     private void InitializeComponent()
     {
+      System.Windows.Forms.Label lblRepeat;
       this.wizard = new AdamMil.UI.Wizard.Wizard();
       this.startStep = new AdamMil.UI.Wizard.StartStep();
       this.inputStep = new AdamMil.UI.Wizard.IntermediateStep();
@@ -82,6 +83,8 @@ namespace GPGDesktop
       this.txtSaveFile = new System.Windows.Forms.TextBox();
       this.rbOverwrite = new System.Windows.Forms.RadioButton();
       this.rbSaveClipboard = new System.Windows.Forms.RadioButton();
+      this.txtPassword2 = new AdamMil.Security.UI.SecureTextBox();
+      lblRepeat = new System.Windows.Forms.Label();
       this.inputStep.SuspendLayout();
       this.signStep.SuspendLayout();
       this.encryptStep.SuspendLayout();
@@ -325,6 +328,8 @@ namespace GPGDesktop
       // 
       // encryptStep
       // 
+      this.encryptStep.Controls.Add(lblRepeat);
+      this.encryptStep.Controls.Add(this.txtPassword2);
       this.encryptStep.Controls.Add(this.chkEncryptToSelf);
       this.encryptStep.Controls.Add(this.cmbAlsoEncryptTo);
       this.encryptStep.Controls.Add(this.lblStrength);
@@ -350,7 +355,7 @@ namespace GPGDesktop
             | System.Windows.Forms.AnchorStyles.Right)));
       this.chkEncryptToSelf.Checked = true;
       this.chkEncryptToSelf.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.chkEncryptToSelf.Location = new System.Drawing.Point(29, 191);
+      this.chkEncryptToSelf.Location = new System.Drawing.Point(29, 218);
       this.chkEncryptToSelf.Name = "chkEncryptToSelf";
       this.chkEncryptToSelf.Size = new System.Drawing.Size(470, 17);
       this.chkEncryptToSelf.TabIndex = 9;
@@ -364,10 +369,10 @@ namespace GPGDesktop
             | System.Windows.Forms.AnchorStyles.Right)));
       this.cmbAlsoEncryptTo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.cmbAlsoEncryptTo.FormattingEnabled = true;
-      this.cmbAlsoEncryptTo.Location = new System.Drawing.Point(29, 212);
+      this.cmbAlsoEncryptTo.Location = new System.Drawing.Point(29, 239);
       this.cmbAlsoEncryptTo.Name = "cmbAlsoEncryptTo";
       this.cmbAlsoEncryptTo.Size = new System.Drawing.Size(470, 21);
-      this.cmbAlsoEncryptTo.TabIndex = 8;
+      this.cmbAlsoEncryptTo.TabIndex = 10;
       // 
       // lblStrength
       // 
@@ -394,10 +399,10 @@ namespace GPGDesktop
       // btnRecipBrowse
       // 
       this.btnRecipBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.btnRecipBrowse.Location = new System.Drawing.Point(432, 164);
+      this.btnRecipBrowse.Location = new System.Drawing.Point(432, 191);
       this.btnRecipBrowse.Name = "btnRecipBrowse";
       this.btnRecipBrowse.Size = new System.Drawing.Size(67, 21);
-      this.btnRecipBrowse.TabIndex = 6;
+      this.btnRecipBrowse.TabIndex = 8;
       this.btnRecipBrowse.Text = "&Browse";
       this.btnRecipBrowse.UseVisualStyleBackColor = true;
       this.btnRecipBrowse.Click += new System.EventHandler(this.btnRecipBrowse_Click);
@@ -406,10 +411,10 @@ namespace GPGDesktop
       // 
       this.txtRecipients.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.txtRecipients.Location = new System.Drawing.Point(29, 164);
+      this.txtRecipients.Location = new System.Drawing.Point(29, 191);
       this.txtRecipients.Name = "txtRecipients";
       this.txtRecipients.Size = new System.Drawing.Size(397, 21);
-      this.txtRecipients.TabIndex = 5;
+      this.txtRecipients.TabIndex = 7;
       this.txtRecipients.TextChanged += new System.EventHandler(this.txtRecipients_TextChanged);
       this.txtRecipients.KeyDown += new System.Windows.Forms.KeyEventHandler(this.text_KeyDown);
       this.txtRecipients.Leave += new System.EventHandler(this.txtRecipients_Leave);
@@ -419,10 +424,10 @@ namespace GPGDesktop
       this.rbAsymmetric.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.rbAsymmetric.Checked = true;
-      this.rbAsymmetric.Location = new System.Drawing.Point(12, 144);
+      this.rbAsymmetric.Location = new System.Drawing.Point(12, 171);
       this.rbAsymmetric.Name = "rbAsymmetric";
       this.rbAsymmetric.Size = new System.Drawing.Size(487, 17);
-      this.rbAsymmetric.TabIndex = 4;
+      this.rbAsymmetric.TabIndex = 6;
       this.rbAsymmetric.TabStop = true;
       this.rbAsymmetric.Text = "Encrypt to &recipients using their public keys:";
       this.rbAsymmetric.UseVisualStyleBackColor = true;
@@ -550,6 +555,27 @@ namespace GPGDesktop
       this.rbSaveClipboard.UseVisualStyleBackColor = true;
       this.rbSaveClipboard.CheckedChanged += new System.EventHandler(this.rbSaveClipboard_CheckedChanged);
       // 
+      // txtPassword2
+      // 
+      this.txtPassword2.Enabled = false;
+      this.txtPassword2.ImeMode = System.Windows.Forms.ImeMode.Disable;
+      this.txtPassword2.Location = new System.Drawing.Point(29, 144);
+      this.txtPassword2.Name = "txtPassword2";
+      this.txtPassword2.Size = new System.Drawing.Size(198, 21);
+      this.txtPassword2.TabIndex = 4;
+      this.txtPassword2.UseSystemPasswordChar = true;
+      // 
+      // lblRepeat
+      // 
+      lblRepeat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      lblRepeat.Location = new System.Drawing.Point(234, 144);
+      lblRepeat.Name = "lblRepeat";
+      lblRepeat.Size = new System.Drawing.Size(265, 21);
+      lblRepeat.TabIndex = 5;
+      lblRepeat.Text = "(repeat password)";
+      lblRepeat.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
       // EncryptSignWizard
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -612,5 +638,6 @@ namespace GPGDesktop
     private System.Windows.Forms.RadioButton rbSaveNear;
     private System.Windows.Forms.CheckBox chkEncryptToSelf;
     private System.Windows.Forms.ComboBox cmbAlsoEncryptTo;
+    private AdamMil.Security.UI.SecureTextBox txtPassword2;
   }
 }
