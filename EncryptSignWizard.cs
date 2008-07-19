@@ -29,14 +29,14 @@ namespace GPGDesktop
 {
   public partial class EncryptSignWizard : Form
   {
-    public EncryptSignWizard(PGPSystem pgp, PrimaryKey[] ownedKeys)
+    public EncryptSignWizard(PGPSystem pgp)
     {
-      if(pgp == null || ownedKeys == null) throw new ArgumentNullException();
+      if(pgp == null) throw new ArgumentNullException();
+      this.pgp = pgp;
      
       InitializeComponent();
 
-      this.pgp = pgp;
-
+      PrimaryKey[] ownedKeys = pgp.GetKeys(ListOptions.RetrieveOnlySecretKeys | ListOptions.IgnoreUnusableKeys);
       if(ownedKeys.Length == 0)
       {
         rbNoSign.Checked = lblCantSign.Visible = true;
@@ -437,18 +437,31 @@ namespace GPGDesktop
       bool success = true;
       if(inputText != null) // we're encrypting/signing some literal text
       {
+        progressBar.Style = ProgressBarStyle.Marquee;
         MemoryStream source = new MemoryStream(Encoding.UTF8.GetBytes(inputText), false);
         success = EncryptAndSign(source, null, encryptOptions, signingOptions, outputOptions);
       }
       else // we're encrypting/signing one or more files
       {
-        foreach(string file in (string[])txtSourceFile.Tag)
+        string[] files = (string[])txtSourceFile.Tag;
+        progressBar.Style   = ProgressBarStyle.Blocks;
+        progressBar.Maximum = files.Length;
+        foreach(string file in files)
         {
           success = EncryptAndSign(file, encryptOptions, signingOptions, outputOptions) && success;
+          progressBar.Value++;
         }
       }
 
+      progressBar.Value = 0;
       e.Cancel = !success;
+
+      if(success)
+      {
+        string op = encryptOptions == null ? "Signing was" :
+          signingOptions == null ? "Encryption was" : "Encryption and signing were";
+        MessageBox.Show(op + " successful.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      }
     }
     #endregion
 
