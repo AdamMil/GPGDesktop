@@ -166,7 +166,7 @@ namespace GPGDesktop
     #region Signing step
     void UpdateSigningStepButtons()
     {
-      wizard.EnableNextButton = !rbDetachedSig.Checked || txtDetachedSig.Text.Trim().Length != 0;
+      wizard.EnableNextButton = !rbDetachedSig.Checked || multipleInputs || txtDetachedSig.Text.Trim().Length != 0;
     }
 
     void btnSigBrowse_Click(object sender, EventArgs e)
@@ -195,8 +195,8 @@ namespace GPGDesktop
 
     void signStep_StepDisplayed(object sender, EventArgs e)
     {
-      rbDetachedSig.Text = "Create a &detached signature and save it in " +
-        (multipleInputs ? "the source file directory." : "this file:");
+      rbDetachedSig.Text = multipleInputs ? "Create &detached signatures and save them in the source file directory."
+                                          : "Create a &detached signature and save it in this file:";
       if(rbDetachedSig.Checked) txtDetachedSig.Enabled = btnSigBrowse.Enabled = !multipleInputs;
 
       UpdateSigningStepButtons();
@@ -296,14 +296,17 @@ namespace GPGDesktop
 
     void rbSymmetric_CheckedChanged(object sender, EventArgs e)
     {
-      txtPassword.Enabled = rbSymmetric.Checked;
+      txtPassword.Enabled = txtPassword2.Enabled = rbSymmetric.Checked;
       UpdateEncryptStepButtons();
       if(rbSymmetric.Checked) txtPassword.Focus();
     }
 
     void encryptStep_NextButtonClicked(object sender, CancelEventArgs e)
     {
-      if(!e.Cancel && !ResolveRecipients()) e.Cancel = true;
+      if(!e.Cancel)
+      {
+        if(!ResolveRecipients() || !PGPUI.ValidatePasswords(txtPassword, txtPassword2)) e.Cancel = true;
+      }
     }
 
     void encryptStep_StepDisplayed(object sender, EventArgs e)
@@ -403,6 +406,8 @@ namespace GPGDesktop
 
     void saveStep_FinishButtonClicked(object sender, CancelEventArgs e)
     {
+      if(e.Cancel) return;
+
       EncryptionOptions encryptOptions = new EncryptionOptions();
       if(rbSymmetric.Checked) encryptOptions.Password = txtPassword.GetText();
       else if(rbAsymmetric.Checked)
@@ -421,7 +426,7 @@ namespace GPGDesktop
 
       if(rbEmbedSig.Checked)
       {
-        signingOptions.Type = inputText != null && chkAscii.Checked ?
+        signingOptions.Type = inputText != null && chkAscii.Checked && encryptOptions == null ?
           SignatureType.ClearSignedText : SignatureType.Embedded;
       }
       else if(rbDetachedSig.Checked) signingOptions.Type = SignatureType.Detached;
@@ -429,37 +434,48 @@ namespace GPGDesktop
 
       OutputOptions outputOptions = new OutputOptions(chkAscii.Checked ? OutputFormat.ASCII : OutputFormat.Binary);
 
+      bool success = true;
       if(inputText != null) // we're encrypting/signing some literal text
       {
         MemoryStream source = new MemoryStream(Encoding.UTF8.GetBytes(inputText), false);
-        EncryptAndSign(source, null, encryptOptions, signingOptions, outputOptions);
+        success = EncryptAndSign(source, null, encryptOptions, signingOptions, outputOptions);
       }
       else // we're encrypting/signing one or more files
       {
         foreach(string file in (string[])txtSourceFile.Tag)
         {
-          EncryptAndSign(file, encryptOptions, signingOptions, outputOptions);
+          success = EncryptAndSign(file, encryptOptions, signingOptions, outputOptions) && success;
         }
       }
+
+      e.Cancel = !success;
     }
     #endregion
 
-    void EncryptAndSign(Stream srcStream, string srcFile, EncryptionOptions encryptOptions,
+    bool EncryptAndSign(Stream srcStream, string srcFile, EncryptionOptions encryptOptions,
                         SigningOptions signingOptions, OutputOptions outputOptions)
     {
       using(Stream output = rbSaveClipboard.Checked ?
              (Stream)new MemoryStream() : new FileStream(txtSaveFile.Text, FileMode.Create, FileAccess.Write))
       {
-        EncryptAndSign(srcStream, output, srcFile, encryptOptions, signingOptions, outputOptions);
-        if(rbSaveClipboard.Checked) Clipboard.SetText(Encoding.UTF8.GetString(((MemoryStream)output).ToArray()));
+        if(EncryptAndSign(srcStream, output, srcFile, encryptOptions, signingOptions, outputOptions))
+        {
+          if(rbSaveClipboard.Checked) Clipboard.SetText(Encoding.UTF8.GetString(((MemoryStream)output).ToArray()));
+          return true;
+        }
+        else
+        {
+          return false;
+        }
       }
     }
 
-    void EncryptAndSign(string srcFile, EncryptionOptions encryptOptions, SigningOptions signingOptions,
+    bool EncryptAndSign(string srcFile, EncryptionOptions encryptOptions, SigningOptions signingOptions,
                         OutputOptions outputOptions)
     {
       FileStream srcStream = null, outStream = null;
       string tempFile = null;
+      bool success = false;
 
       try
       {
@@ -467,7 +483,7 @@ namespace GPGDesktop
         catch(Exception ex)
         {
           ShowCantOpenFileMessage("input", srcFile, ex);
-          return;
+          return false;
         }
 
         if(rbOverwrite.Checked)
@@ -480,10 +496,10 @@ namespace GPGDesktop
           catch(Exception ex)
           {
             ShowCantOpenFileMessage("temporary", tempFile, ex);
-            return;
+            return false;
           }
 
-          EncryptAndSign(srcStream, outStream, srcFile, encryptOptions, signingOptions, outputOptions);
+          success = EncryptAndSign(srcStream, outStream, srcFile, encryptOptions, signingOptions, outputOptions);
           srcStream.Close();
           outStream.Close();
 
@@ -492,17 +508,18 @@ namespace GPGDesktop
           {
             MessageBox.Show("Unable to overwrite source file '" + srcFile + "'. The error was: " + ex.Message,
                             "Unable to overwrite file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            success = false;
           }
         }
         else if(rbSaveNear.Checked)
         {
           outStream = GetNearFile(srcFile, chkAscii.Checked ? ".pgp.asc" : ".pgp");
-          if(outStream == null) return;
-          EncryptAndSign(srcStream, outStream, srcFile, encryptOptions, signingOptions, outputOptions);
+          if(outStream == null) return false;
+          success = EncryptAndSign(srcStream, outStream, srcFile, encryptOptions, signingOptions, outputOptions);
         }
         else
         {
-          EncryptAndSign(srcStream, srcFile, encryptOptions, signingOptions, outputOptions);
+          success = EncryptAndSign(srcStream, srcFile, encryptOptions, signingOptions, outputOptions);
         }
       }
       finally
@@ -511,9 +528,11 @@ namespace GPGDesktop
         if(outStream != null) outStream.Dispose();
         if(tempFile != null) File.Delete(tempFile);
       }
+
+      return success;
     }
 
-    void EncryptAndSign(Stream srcStream, Stream destStream, string srcFile, EncryptionOptions encryptionOptions,
+    bool EncryptAndSign(Stream srcStream, Stream destStream, string srcFile, EncryptionOptions encryptionOptions,
                         SigningOptions signingOptions, OutputOptions outputOptions)
     {
       try
@@ -528,13 +547,13 @@ namespace GPGDesktop
             catch(Exception ex)
             {
               ShowCantOpenFileMessage("signature", txtDetachedSig.Text, ex);
-              return;
+              return false;
             }
           }
           else
           {
             sigStream = GetNearFile(srcFile, chkAscii.Checked ? ".sig.asc" : ".sig");
-            if(sigStream == null) return;
+            if(sigStream == null) return false;
           }
 
           using(sigStream) pgp.Sign(srcStream, sigStream, signingOptions, outputOptions);
@@ -546,12 +565,16 @@ namespace GPGDesktop
         {
           pgp.SignAndEncrypt(srcStream, destStream, signingOptions, encryptionOptions, outputOptions);
         }
+
+        return true;
       }
       catch(OperationCanceledException) { }
       catch(Exception ex) 
       { 
         MessageBox.Show(ex.Message, "Error occurred", MessageBoxButtons.OK, MessageBoxIcon.Error); 
       }
+
+      return false;
     }
 
     void text_KeyDown(object sender, KeyEventArgs e)
