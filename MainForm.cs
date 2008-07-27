@@ -33,6 +33,22 @@ partial class MainForm : Form
     InitializeComponent();
   }
 
+  protected override void OnKeyDown(KeyEventArgs e)
+  {
+    base.OnKeyDown(e);
+
+    if(!e.Handled && e.Modifiers == Keys.None)
+    {
+      if(e.KeyCode == Keys.F1) tabs.SelectedTab = homeTab;
+      else if(e.KeyCode == Keys.F2) tabs.SelectedTab = keysTab;
+      else if(e.KeyCode == Keys.F3) tabs.SelectedTab = padTab;
+      else if(e.KeyCode == Keys.F5 && tabs.SelectedTab == keysTab) InvalidateKeyList();
+      else return;
+
+      e.Handled = true;
+    }
+  }
+
   protected override void OnShown(EventArgs e)
   {
     base.OnShown(e);
@@ -57,6 +73,11 @@ partial class MainForm : Form
     }
   }
 
+  void About()
+  {
+    new AboutBox().ShowDialog();
+  }
+
   void ActivateIcon()
   {
     if(homeList.SelectedIndices.Count != 0)
@@ -72,9 +93,11 @@ partial class MainForm : Form
     }
   }
 
-  void About()
+  void ApplyKeyFilter()
   {
-    new AboutBox().ShowDialog();
+    string trimmed = txtSearch.Text.Trim();
+    keyList.FilterItems(trimmed.Length == 0 ?
+                          null : trimmed.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
   }
 
   void Configure()
@@ -203,6 +226,7 @@ partial class MainForm : Form
   {
     keyList.PGP = pgp;
     keyList.ShowKeyring(null);
+    ApplyKeyFilter();
     keyListInvalidated = false;
   }
 
@@ -258,12 +282,14 @@ partial class MainForm : Form
 
   void txtSearch_TextChanged(object sender, EventArgs e)
   {
-    string trimmed = txtSearch.Text.Trim();
+    btnClearSearch.Enabled = txtSearch.TextLength != 0;
 
-    btnClearSearch.Enabled = trimmed.Length != 0;
+    ApplyKeyFilter();
+  }
 
-    keyList.FilterItems(trimmed.Length == 0 ?
-                          null : trimmed.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+  void btnRefresh_Click(object sender, EventArgs e)
+  {
+    InvalidateKeyList();
   }
 
   void tabs_Selected(object sender, TabControlEventArgs e)

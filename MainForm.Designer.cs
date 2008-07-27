@@ -64,11 +64,12 @@ namespace GPGDesktop
       System.Windows.Forms.ToolStripSeparator menuSep1;
       System.Windows.Forms.ToolStripMenuItem exitMenuItem;
       System.Windows.Forms.Button btnSymmetric;
-      System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Encrypt/Sign Data", 0);
-      System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Decrypt/Verify Data", 1);
-      System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Generate Your Key", 2);
-      System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("Options", 3);
-      System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("About", 4);
+      System.Windows.Forms.Button btnRefresh;
+      System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Encrypt/Sign Data", 0);
+      System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Decrypt/Verify Data", 1);
+      System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Generate Your Key", 2);
+      System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Options", 3);
+      System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("About", 4);
       this.btnVerify = new System.Windows.Forms.Button();
       this.btnDecrypt = new System.Windows.Forms.Button();
       this.homeList = new System.Windows.Forms.ListView();
@@ -97,6 +98,7 @@ namespace GPGDesktop
       menuSep1 = new System.Windows.Forms.ToolStripSeparator();
       exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       btnSymmetric = new System.Windows.Forms.Button();
+      btnRefresh = new System.Windows.Forms.Button();
       this.keysTab.SuspendLayout();
       this.tabs.SuspendLayout();
       this.homeTab.SuspendLayout();
@@ -253,6 +255,16 @@ namespace GPGDesktop
       btnSymmetric.UseVisualStyleBackColor = true;
       btnSymmetric.Click += new System.EventHandler(this.btnSymmetric_Click);
       // 
+      // btnRefresh
+      // 
+      btnRefresh.Location = new System.Drawing.Point(386, 5);
+      btnRefresh.Name = "btnRefresh";
+      btnRefresh.Size = new System.Drawing.Size(112, 21);
+      btnRefresh.TabIndex = 4;
+      btnRefresh.Text = "&Refresh Keys";
+      btnRefresh.UseVisualStyleBackColor = true;
+      btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+      // 
       // btnVerify
       // 
       this.btnVerify.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -282,19 +294,19 @@ namespace GPGDesktop
       this.homeList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      listViewItem6.ToolTipText = "Encrypt data to protect its confidentiality, and/or sign it to protect its authen" +
+      listViewItem1.ToolTipText = "Encrypt data to protect its confidentiality, and/or sign it to protect its authen" +
     "ticity.";
-      listViewItem7.ToolTipText = "Decrypt data and/or verify the signatures in a signed document.";
-      listViewItem8.ToolTipText = "Generate a new key pair for yourself, so that you can sign documents and receive " +
+      listViewItem2.ToolTipText = "Decrypt data and/or verify the signatures in a signed document.";
+      listViewItem3.ToolTipText = "Generate a new key pair for yourself, so that you can sign documents and receive " +
     "encrypted data.";
-      listViewItem9.ToolTipText = "Change GPG Desktop configuration options.";
-      listViewItem10.ToolTipText = "About this program.";
+      listViewItem4.ToolTipText = "Change GPG Desktop configuration options.";
+      listViewItem5.ToolTipText = "About this program.";
       this.homeList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem6,
-            listViewItem7,
-            listViewItem8,
-            listViewItem9,
-            listViewItem10});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5});
       this.homeList.LargeImageList = homeIcons;
       this.homeList.Location = new System.Drawing.Point(0, 0);
       this.homeList.MultiSelect = false;
@@ -307,6 +319,7 @@ namespace GPGDesktop
       // 
       // keysTab
       // 
+      this.keysTab.Controls.Add(btnRefresh);
       this.keysTab.Controls.Add(this.btnClearSearch);
       this.keysTab.Controls.Add(this.txtSearch);
       this.keysTab.Controls.Add(lblSearch);
@@ -434,6 +447,7 @@ namespace GPGDesktop
       this.Controls.Add(this.mainMenu);
       this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+      this.KeyPreview = true;
       this.MainMenuStrip = this.mainMenu;
       this.MinimumSize = new System.Drawing.Size(847, 250);
       this.Name = "MainForm";
