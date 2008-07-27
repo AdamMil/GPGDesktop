@@ -405,6 +405,7 @@ public partial class EncryptSignWizard : WizardBase
     {
       encryptOptions.Recipients.AddRange((PrimaryKey[])txtRecipients.Tag);
       if(chkEncryptToSelf.Checked) encryptOptions.Recipients.Add(((KeyItem)cmbAlsoEncryptTo.SelectedItem).Value);
+      encryptOptions.AlwaysTrustRecipients = true;
     }
     else encryptOptions = null;
 
