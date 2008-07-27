@@ -40,6 +40,12 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="DecryptVerifyWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DecryptVerifyWizard.Designer.cs">
+      <DependentUpon>DecryptVerifyWizard.cs</DependentUpon>
+    </Compile>
     <Compile Include="EncryptSignWizard.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -52,12 +58,22 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="OptionsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OptionsForm.Designer.cs">
+      <DependentUpon>OptionsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="PasswordCache.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <SubType>Designer</SubType>
       <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DecryptVerifyWizard.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DecryptVerifyWizard.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EncryptSignWizard.resx">
       <SubType>Designer</SubType>
@@ -66,6 +82,10 @@
     <EmbeddedResource Include="MainForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionsForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>OptionsForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
@@ -76,6 +96,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="WizardBase.cs">
+      <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>

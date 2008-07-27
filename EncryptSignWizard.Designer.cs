@@ -159,7 +159,6 @@ namespace GPGDesktop
       this.txtInput.Name = "txtInput";
       this.txtInput.Size = new System.Drawing.Size(470, 170);
       this.txtInput.TabIndex = 5;
-      this.txtInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.text_KeyDown);
       // 
       // rbManual
       // 
@@ -194,7 +193,6 @@ namespace GPGDesktop
       this.txtSourceFile.Size = new System.Drawing.Size(397, 21);
       this.txtSourceFile.TabIndex = 2;
       this.txtSourceFile.TextChanged += new System.EventHandler(this.txtSourceFile_TextChanged);
-      this.txtSourceFile.KeyDown += new System.Windows.Forms.KeyEventHandler(this.text_KeyDown);
       // 
       // rbSourceClipboard
       // 
@@ -299,7 +297,6 @@ namespace GPGDesktop
       this.txtDetachedSig.Size = new System.Drawing.Size(397, 21);
       this.txtDetachedSig.TabIndex = 3;
       this.txtDetachedSig.TextChanged += new System.EventHandler(this.signStep_UpdateButtons);
-      this.txtDetachedSig.KeyDown += new System.Windows.Forms.KeyEventHandler(this.text_KeyDown);
       // 
       // rbDetachedSig
       // 
@@ -438,7 +435,6 @@ namespace GPGDesktop
       this.txtRecipients.Size = new System.Drawing.Size(397, 21);
       this.txtRecipients.TabIndex = 7;
       this.txtRecipients.TextChanged += new System.EventHandler(this.txtRecipients_TextChanged);
-      this.txtRecipients.KeyDown += new System.Windows.Forms.KeyEventHandler(this.text_KeyDown);
       this.txtRecipients.Leave += new System.EventHandler(this.txtRecipients_Leave);
       // 
       // rbAsymmetric
@@ -560,7 +556,6 @@ namespace GPGDesktop
       this.txtSaveFile.Name = "txtSaveFile";
       this.txtSaveFile.Size = new System.Drawing.Size(396, 21);
       this.txtSaveFile.TabIndex = 4;
-      this.txtSaveFile.KeyDown += new System.Windows.Forms.KeyEventHandler(this.text_KeyDown);
       // 
       // rbOverwrite
       // 
