@@ -36,19 +36,11 @@ static class Program
     Application.EnableVisualStyles();
     Application.SetCompatibleTextRenderingDefault(false);
 
-    ExeGPG gpg = new ExeGPG("d:/adammil/programs/gnupg/gpg.exe");
-    gpg.DecryptionPasswordNeeded += GetDecryptionPassword;
-    gpg.KeyPasswordNeeded        += GetKeyPassword;
-    gpg.KeyPasswordInvalid       += OnPasswordInvalid;
-    #if DEBUG
-    gpg.LineLogged += delegate(string line) { System.Diagnostics.Debugger.Log(0, "GPG", line+"\n"); };
-    #endif
-
-    try { Application.Run(new MainForm(gpg)); }
+    try { Application.Run(new MainForm()); }
     finally { PasswordCache.Dispose(); }
   }
 
-  static SecureString GetDecryptionPassword()
+  public static SecureString GetDecryptionPassword()
   {
     PasswordForm form = new PasswordForm();
     form.DescriptionText        = "This data is encrypted with a password. Enter the password to decrypt the data.";
@@ -56,7 +48,7 @@ static class Program
     return form.ShowDialog() == DialogResult.OK ? form.GetPassword() : null;
   }
 
-  static SecureString GetKeyPassword(string keyId, string userId)
+  public static SecureString GetKeyPassword(string keyId, string userId)
   {
     SecureString password = PasswordCache.Get(keyId, false);
     if(password == null)
@@ -64,7 +56,7 @@ static class Program
       PasswordForm form = new PasswordForm();
       form.DescriptionText  = "A password is needed to unlock the secret key for " + userId;
       form.RememberPassword = rememberPassword;
-      form.RememberText     = "Remember my password for 5 minutes";
+      form.RememberText     = "Remember my password for 5 idle minutes";
       if(form.ShowDialog() == DialogResult.OK)
       {
         password = form.GetPassword();
@@ -75,7 +67,7 @@ static class Program
     return password;
   }
 
-  static void OnPasswordInvalid(string keyId)
+  public static void OnPasswordInvalid(string keyId)
   {
     PasswordCache.Remove(keyId);
     MessageBox.Show("Incorrect password.", "Incorrect password", MessageBoxButtons.OK, MessageBoxIcon.Error);

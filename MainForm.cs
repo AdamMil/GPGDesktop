@@ -28,16 +28,33 @@ namespace GPGDesktop
 
 partial class MainForm : Form
 {
-  MainForm()
+  public MainForm()
   {
     InitializeComponent();
   }
 
-  public MainForm(PGPSystem pgp)
+  protected override void OnShown(EventArgs e)
   {
-    if(pgp == null) throw new ArgumentNullException();
-    this.pgp = pgp;
-    InitializeComponent();
+    base.OnShown(e);
+
+    AdamMil.Security.PGP.GPG.ExeGPG gpg = null;
+
+    string gpgPath = GPGDesktop.Properties.Settings.Default.GPGPath;
+    if(!string.IsNullOrEmpty(gpgPath))
+    {
+      try { gpg = new AdamMil.Security.PGP.GPG.ExeGPG(gpgPath); }
+      catch { }
+    }
+
+    if(gpg == null)
+    {
+      Configure();
+      if(this.pgp == null) Close();
+    }
+    else
+    {
+      InitializePGP(gpg);
+    }
   }
 
   void ActivateIcon()
@@ -62,10 +79,16 @@ partial class MainForm : Form
 
   void Configure()
   {
+    if(new OptionsForm().ShowDialog() == DialogResult.OK)
+    {
+      InitializePGP(new AdamMil.Security.PGP.GPG.ExeGPG(GPGDesktop.Properties.Settings.Default.GPGPath));
+      InvalidateKeyList();
+    }
   }
 
   void DecryptVerifyData()
   {
+    new DecryptVerifyWizard(pgp).ShowDialog();
   }
 
   void EncryptPad(EncryptionOptions options)
@@ -102,9 +125,85 @@ partial class MainForm : Form
     return new MemoryStream(Encoding.UTF8.GetBytes(txtPad.Text), false);
   }
 
+  void InitializePGP(AdamMil.Security.PGP.GPG.ExeGPG gpg)
+  {
+    gpg.DecryptionPasswordNeeded += Program.GetDecryptionPassword;
+    gpg.KeyPasswordNeeded        += Program.GetKeyPassword;
+    gpg.KeyPasswordInvalid       += Program.OnPasswordInvalid;
+    #if DEBUG
+    gpg.LineLogged += delegate(string line) { System.Diagnostics.Debugger.Log(0, "GPG", line+"\n"); };
+    #endif
+
+    this.pgp = gpg;
+    InvalidateKeyList();
+  }
+
   void InvalidateKeyList()
   {
-    keyListInvalidated = true;
+    if(tabs.SelectedTab == keysTab)
+    {
+      RefreshKeyList();
+    }
+    else
+    {
+      keyListInvalidated = true;
+    }
+  }
+
+  void PadSignAndEncrypt(bool encrypt)
+  {
+    PrimaryKey[] keys = null;
+    try { keys = pgp.GetKeys(ListOptions.RetrieveOnlySecretKeys | ListOptions.IgnoreUnusableKeys); }
+    catch(Exception ex)
+    {
+      MessageBox.Show("Unable to retrieve a list of signing keys. The error was: " + ex.Message,
+                      "Key retrieval failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      return;
+    }
+
+    keys = Array.FindAll(keys, delegate(PrimaryKey key) { return key.HasCapabilities(KeyCapabilities.Sign); });
+    if(keys.Length == 0)
+    {
+      MessageBox.Show("You don't have any signing keys. If you don't have a key pair, create one. Otherwise, add a "+
+                      "signing subkey to your key pair.", "No signing key",
+                      MessageBoxButtons.OK, MessageBoxIcon.Error);
+      return;
+    }
+
+    KeyForm form = new KeyForm("Select the signing key to use.", keys);
+    if(form.ShowDialog() == DialogResult.OK)
+    {
+      EncryptionOptions encryptOptions = null;
+      if(encrypt)
+      {
+        RecipientSearchForm recipForm = new RecipientSearchForm(pgp);
+        if(recipForm.ShowDialog() == DialogResult.Cancel) return;
+        encryptOptions = new EncryptionOptions(recipForm.GetSelectedRecipients());
+        encryptOptions.AlwaysTrustRecipients = true;
+      }
+
+      try
+      {
+        MemoryStream dest = new MemoryStream();
+        SignatureType sigType = encryptOptions == null ? SignatureType.ClearSignedText : SignatureType.Embedded;
+        pgp.SignAndEncrypt(GetPadStream(), dest, new SigningOptions(sigType, form.SelectedKey), encryptOptions,
+                           new OutputOptions(OutputFormat.ASCII));
+        SetPadText(dest);
+      }
+      catch(OperationCanceledException) { }
+      catch(Exception ex)
+      {
+        MessageBox.Show("Signing failed. The error was: " + ex.Message, "Signing failed",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+  }
+
+  void RefreshKeyList()
+  {
+    keyList.PGP = pgp;
+    keyList.ShowKeyring(null);
+    keyListInvalidated = false;
   }
 
   void SetPadText(MemoryStream data)
@@ -157,11 +256,26 @@ partial class MainForm : Form
     Close();
   }
 
-  void txtPad_KeyDown(object sender, KeyEventArgs e)
+  void txtSearch_TextChanged(object sender, EventArgs e)
+  {
+    string trimmed = txtSearch.Text.Trim();
+
+    btnClearSearch.Enabled = trimmed.Length != 0;
+
+    keyList.FilterItems(trimmed.Length == 0 ?
+                          null : trimmed.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+  }
+
+  void tabs_Selected(object sender, TabControlEventArgs e)
+  {
+    if(tabs.SelectedTab == keysTab && keyListInvalidated) RefreshKeyList();
+  }
+
+  void text_KeyDown(object sender, KeyEventArgs e)
   {
     if(!e.Handled && e.KeyCode == Keys.A && e.Modifiers == Keys.Control) // ctrl-a selects all text
     {
-      txtPad.SelectAll();
+      ((TextBoxBase)sender).SelectAll();
       e.Handled = true;
     }
   }
@@ -201,6 +315,16 @@ partial class MainForm : Form
       MessageBox.Show("Decryption failed. The error was: " + ex.Message, "Decryption failed",
                       MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
+  }
+
+  void btnSign_Click(object sender, EventArgs e)
+  {
+    PadSignAndEncrypt(false);
+  }
+
+  void btnSignEncrypt_Click(object sender, EventArgs e)
+  {
+    PadSignAndEncrypt(true);
   }
 
   void btnVerify_Click(object sender, EventArgs e)
@@ -282,7 +406,7 @@ partial class MainForm : Form
     }
   }
 
-  readonly PGPSystem pgp;
+  PGPSystem pgp;
   bool keyListInvalidated = true;
 }
 
