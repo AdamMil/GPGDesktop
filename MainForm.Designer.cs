@@ -338,8 +338,9 @@ namespace GPGDesktop
       this.btnClearSearch.Name = "btnClearSearch";
       this.btnClearSearch.Size = new System.Drawing.Size(52, 21);
       this.btnClearSearch.TabIndex = 3;
-      this.btnClearSearch.Text = "Clear";
+      this.btnClearSearch.Text = "&Clear";
       this.btnClearSearch.UseVisualStyleBackColor = true;
+      this.btnClearSearch.Click += new System.EventHandler(this.btnClearSearch_Click);
       // 
       // txtSearch
       // 

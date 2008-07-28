@@ -287,6 +287,11 @@ partial class MainForm : Form
     ApplyKeyFilter();
   }
 
+  void btnClearSearch_Click(object sender, EventArgs e)
+  {
+    txtSearch.Text = string.Empty;
+  }
+
   void btnRefresh_Click(object sender, EventArgs e)
   {
     InvalidateKeyList();
