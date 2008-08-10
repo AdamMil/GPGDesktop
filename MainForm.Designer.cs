@@ -328,7 +328,7 @@ namespace GPGDesktop
       this.keysTab.Name = "keysTab";
       this.keysTab.Size = new System.Drawing.Size(831, 365);
       this.keysTab.TabIndex = 1;
-      this.keysTab.Text = "Manage Keys";
+      this.keysTab.Text = "Manage Keys (F2)";
       this.keysTab.UseVisualStyleBackColor = true;
       // 
       // btnClearSearch
@@ -393,7 +393,7 @@ namespace GPGDesktop
       this.homeTab.Name = "homeTab";
       this.homeTab.Size = new System.Drawing.Size(831, 365);
       this.homeTab.TabIndex = 3;
-      this.homeTab.Text = "Home";
+      this.homeTab.Text = "Home (F1)";
       this.homeTab.UseVisualStyleBackColor = true;
       // 
       // padTab
@@ -411,7 +411,7 @@ namespace GPGDesktop
       this.padTab.Name = "padTab";
       this.padTab.Size = new System.Drawing.Size(831, 365);
       this.padTab.TabIndex = 4;
-      this.padTab.Text = "Scratch Pad";
+      this.padTab.Text = "Scratch Pad (F3)";
       this.padTab.UseVisualStyleBackColor = true;
       // 
       // txtPad

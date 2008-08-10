@@ -58,7 +58,7 @@ namespace GPGDesktop
       lblText.Name = "lblText";
       lblText.Size = new System.Drawing.Size(190, 28);
       lblText.TabIndex = 1;
-      lblText.Text = "GPG Desktop v. 1.0\r\nDeveloped by Adam Milazzo\r\n";
+      lblText.Text = "GPG Desktop v. 1.02\r\nDeveloped by Adam Milazzo\r\n";
       // 
       // myLink
       // 
@@ -112,6 +112,7 @@ namespace GPGDesktop
       this.Controls.Add(picture);
       this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+      this.KeyPreview = true;
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.Name = "AboutBox";
