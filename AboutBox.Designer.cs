@@ -58,7 +58,7 @@ namespace GPGDesktop
       lblText.Name = "lblText";
       lblText.Size = new System.Drawing.Size(190, 28);
       lblText.TabIndex = 1;
-      lblText.Text = "GPG Desktop v. 1.02\r\nDeveloped by Adam Milazzo\r\n";
+      lblText.Text = "GPG Desktop v. 1.03\r\nDeveloped by Adam Milazzo\r\n";
       // 
       // myLink
       // 

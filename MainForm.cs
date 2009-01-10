@@ -326,13 +326,14 @@ partial class MainForm : Form
   {
     PasswordForm form = new PasswordForm();
     form.EnableRememberPassword = false;
+    form.RequirePassword        = true;
     form.DescriptionText        = "Enter the password used to encrypt the data.";
     if(form.ShowDialog() == DialogResult.OK) EncryptPad(new EncryptionOptions(form.GetPassword()));
   }
 
   void btnDecrypt_Click(object sender, EventArgs e)
   {
-    try 
+    try
     { 
       MemoryStream dest = new MemoryStream();
       Signature[] sigs = pgp.Decrypt(GetPadStream(), dest);
