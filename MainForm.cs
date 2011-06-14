@@ -22,6 +22,7 @@ using System.Text;
 using System.Windows.Forms;
 using AdamMil.Security.PGP;
 using AdamMil.Security.UI;
+using System.Collections.Generic;
 
 namespace GPGDesktop
 {
@@ -193,7 +194,7 @@ partial class MainForm : Form
       return;
     }
 
-    KeyForm form = new KeyForm("Select the signing key to use.", keys);
+    KeyFormWithOptions form = new KeyFormWithOptions("Select the signing key to use.", keys);
     if(form.ShowDialog() == DialogResult.OK)
     {
       EncryptionOptions encryptOptions = null;
@@ -201,7 +202,12 @@ partial class MainForm : Form
       {
         RecipientSearchForm recipForm = new RecipientSearchForm(pgp);
         if(recipForm.ShowDialog() == DialogResult.Cancel) return;
-        encryptOptions = new EncryptionOptions(recipForm.GetSelectedRecipients());
+        List<PrimaryKey> recipients = new List<PrimaryKey>(recipForm.GetSelectedRecipients());
+        if(form.EncryptToSelf && recipients.Find(p => p.EffectiveId == form.SelectedKey.EffectiveId) == null)
+        {
+          recipients.Add(form.SelectedKey);
+        }
+        encryptOptions = new EncryptionOptions(recipients.ToArray());
         encryptOptions.AlwaysTrustRecipients = true;
       }
 

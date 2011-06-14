@@ -25,10 +25,16 @@ public partial class OptionsForm : Form
       if(path == null)
       {
         path = GetInstallationPath("HKEY_LOCAL_MACHINE");
-        if(path == null)
+        if(path == null) // if it's not in the registry, try looking in various places on disk
         {
-          path = LookForExecutableInDirectory(
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"GNU\GnuPG"));
+          string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+          path = LookForExecutableInDirectory(Path.Combine(programFiles, @"GNU\GnuPG"));
+
+          if(path == null)
+          {
+            string x86ProgramFiles = Path.Combine(Path.GetDirectoryName(programFiles), "Program Files (x86)");
+            path = LookForExecutableInDirectory(Path.Combine(x86ProgramFiles, @"GNU\GnuPG"));
+          }
         }
       }
 

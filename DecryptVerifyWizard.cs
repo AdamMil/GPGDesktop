@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using AdamMil.IO;
 using AdamMil.Security.PGP;
 using AdamMil.Security.UI;
 
@@ -244,7 +245,7 @@ public partial class DecryptVerifyWizard : WizardBase
         if(srcWasUnencrypted && !rbDontSave.Checked)
         {
           destStream.SetLength(0);
-          AdamMil.IO.IOH.CopyStream(srcStream, destStream, false, true);
+          srcStream.CopyTo(destStream, true);
         }
         else if(!srcWasUnencrypted && rbOverwrite.Checked)
         {
