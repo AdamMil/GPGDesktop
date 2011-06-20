@@ -598,7 +598,8 @@ public partial class EncryptSignWizard : WizardBase
     catch(OperationCanceledException) { }
     catch(Exception ex) 
     { 
-      MessageBox.Show(ex.Message, "Error occurred", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+      string action = encryptionOptions == null ? "signing" : signingOptions == null ? "encrypting" : "encrypting or signing";
+      PGPUI.ShowErrorDialog(action, ex);
     }
 
     return false;

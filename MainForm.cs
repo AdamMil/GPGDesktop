@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using AdamMil.Security.PGP;
 using AdamMil.Security.UI;
 using System.Collections.Generic;
+using AdamMil.Security.PGP.GPG;
 
 namespace GPGDesktop
 {
@@ -54,19 +55,19 @@ partial class MainForm : Form
   {
     base.OnShown(e);
 
-    AdamMil.Security.PGP.GPG.ExeGPG gpg = null;
+    ExeGPG gpg = null;
 
     string gpgPath = GPGDesktop.Properties.Settings.Default.GPGPath;
     if(!string.IsNullOrEmpty(gpgPath))
     {
-      try { gpg = new AdamMil.Security.PGP.GPG.ExeGPG(gpgPath); }
+      try { gpg = new ExeGPG(gpgPath); }
       catch { }
     }
 
     if(gpg == null)
     {
       Configure();
-      if(this.pgp == null) Close();
+      if(this.gpg == null) Close();
     }
     else
     {
@@ -105,41 +106,35 @@ partial class MainForm : Form
   {
     if(new OptionsForm().ShowDialog() == DialogResult.OK)
     {
-      InitializePGP(new AdamMil.Security.PGP.GPG.ExeGPG(GPGDesktop.Properties.Settings.Default.GPGPath));
+      InitializePGP(new ExeGPG(GPGDesktop.Properties.Settings.Default.GPGPath));
       InvalidateKeyList();
     }
   }
 
   void DecryptVerifyData()
   {
-    new DecryptVerifyWizard(pgp).ShowDialog();
+    new DecryptVerifyWizard(gpg).ShowDialog();
   }
 
   void EncryptPad(EncryptionOptions options)
   {
-    try
+    PGPUI.DoWithErrorHandling("encrypting", delegate
     {
       options.AlwaysTrustRecipients = true;
       MemoryStream dest = new MemoryStream();
-      pgp.Encrypt(GetPadStream(), dest, options, new OutputOptions(OutputFormat.ASCII));
+      gpg.Encrypt(GetPadStream(), dest, options, new OutputOptions(OutputFormat.ASCII));
       SetPadText(dest);
-    }
-    catch(OperationCanceledException) { }
-    catch(Exception ex)
-    {
-      MessageBox.Show("Encryption failed. The error was: " + ex.Message, "Encryption failed",
-                      MessageBoxButtons.OK, MessageBoxIcon.Error);
-    }
+    });
   }
 
   void EncryptSignData()
   {
-    new EncryptSignWizard(pgp).ShowDialog();
+    new EncryptSignWizard(gpg).ShowDialog();
   }
 
   void GenerateKeyPair()
   {
-    GenerateKeyForm form = new GenerateKeyForm(pgp);
+    GenerateKeyForm form = new GenerateKeyForm(gpg);
     form.KeyGenerated += delegate { InvalidateKeyList(); };
     form.ShowDialog();
   }
@@ -149,7 +144,7 @@ partial class MainForm : Form
     return new MemoryStream(Encoding.UTF8.GetBytes(txtPad.Text), false);
   }
 
-  void InitializePGP(AdamMil.Security.PGP.GPG.ExeGPG gpg)
+  void InitializePGP(ExeGPG gpg)
   {
     gpg.DecryptionPasswordNeeded += Program.GetDecryptionPassword;
     gpg.KeyPasswordNeeded        += Program.GetKeyPassword;
@@ -158,7 +153,7 @@ partial class MainForm : Form
     gpg.LineLogged += delegate(string line) { System.Diagnostics.Debugger.Log(0, "GPG", line+"\n"); };
     #endif
 
-    this.pgp = gpg;
+    this.gpg = gpg;
     InvalidateKeyList();
   }
 
@@ -177,7 +172,7 @@ partial class MainForm : Form
   void PadSignAndEncrypt(bool encrypt)
   {
     PrimaryKey[] keys = null;
-    try { keys = pgp.GetKeys(ListOptions.RetrieveOnlySecretKeys | ListOptions.IgnoreUnusableKeys); }
+    try { keys = gpg.GetKeys(ListOptions.RetrieveOnlySecretKeys | ListOptions.IgnoreUnusableKeys); }
     catch(Exception ex)
     {
       MessageBox.Show("Unable to retrieve a list of signing keys. The error was: " + ex.Message,
@@ -200,7 +195,7 @@ partial class MainForm : Form
       EncryptionOptions encryptOptions = null;
       if(encrypt)
       {
-        RecipientSearchForm recipForm = new RecipientSearchForm(pgp);
+        RecipientSearchForm recipForm = new RecipientSearchForm(gpg);
         if(recipForm.ShowDialog() == DialogResult.Cancel) return;
         List<PrimaryKey> recipients = new List<PrimaryKey>(recipForm.GetSelectedRecipients());
         if(form.EncryptToSelf && recipients.Find(p => p.EffectiveId == form.SelectedKey.EffectiveId) == null)
@@ -211,26 +206,20 @@ partial class MainForm : Form
         encryptOptions.AlwaysTrustRecipients = true;
       }
 
-      try
+      PGPUI.DoWithErrorHandling("signing", delegate
       {
         MemoryStream dest = new MemoryStream();
         SignatureType sigType = encryptOptions == null ? SignatureType.ClearSignedText : SignatureType.Embedded;
-        pgp.SignAndEncrypt(GetPadStream(), dest, new SigningOptions(sigType, form.SelectedKey), encryptOptions,
+        gpg.SignAndEncrypt(GetPadStream(), dest, new SigningOptions(sigType, form.SelectedKey), encryptOptions,
                            new OutputOptions(OutputFormat.ASCII));
         SetPadText(dest);
-      }
-      catch(OperationCanceledException) { }
-      catch(Exception ex)
-      {
-        MessageBox.Show("Signing failed. The error was: " + ex.Message, "Signing failed",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
+      });
     }
   }
 
   void RefreshKeyList()
   {
-    keyList.PGP = pgp;
+    keyList.PGP = gpg;
     keyList.ShowKeyring(null);
     ApplyKeyFilter();
     keyListInvalidated = false;
@@ -324,12 +313,14 @@ partial class MainForm : Form
 
   void btnEncrypt_Click(object sender, EventArgs e)
   {
-    RecipientSearchForm form = new RecipientSearchForm(pgp);
+    RecipientSearchForm form = new RecipientSearchForm(gpg);
     if(form.ShowDialog() == DialogResult.OK) EncryptPad(new EncryptionOptions(form.GetSelectedRecipients()));
   }
 
   void btnSymmetric_Click(object sender, EventArgs e)
   {
+    // TODO: in gpg 2+, it ignores the password we give it in favor of its own UI, so there's no point in asking the user for
+    // the password beforehand. we should avoid asking the user in that case
     PasswordForm form = new PasswordForm();
     form.EnableRememberPassword = false;
     form.RequirePassword        = true;
@@ -339,20 +330,14 @@ partial class MainForm : Form
 
   void btnDecrypt_Click(object sender, EventArgs e)
   {
-    try
+    PGPUI.DoWithErrorHandling("decrypting", delegate
     { 
       MemoryStream dest = new MemoryStream();
-      Signature[] sigs = pgp.Decrypt(GetPadStream(), dest);
+      Signature[] sigs = gpg.Decrypt(GetPadStream(), dest);
       SetPadText(dest);
 
       if(sigs.Length != 0) ShowSignatures(sigs);
-    }
-    catch(OperationCanceledException) { }
-    catch(Exception ex)
-    {
-      MessageBox.Show("Decryption failed. The error was: " + ex.Message, "Decryption failed",
-                      MessageBoxButtons.OK, MessageBoxIcon.Error);
-    }
+    });
   }
 
   void btnSign_Click(object sender, EventArgs e)
@@ -367,9 +352,18 @@ partial class MainForm : Form
 
   void btnVerify_Click(object sender, EventArgs e)
   {
-    try
+    PGPUI.DoWithErrorHandling("verifying", delegate
     {
-      Signature[] sigs = pgp.Verify(GetPadStream());
+      Signature[] sigs;
+      try
+      {
+        sigs = gpg.Verify(GetPadStream());
+      }
+      catch(DecryptionFailedException) // if the data appears encrypted, try decrypting it
+      {
+        sigs = gpg.Decrypt(GetPadStream(), Stream.Null);
+      }
+
       if(sigs.Length == 0)
       {
         MessageBox.Show("This data contains no signatures.", "No signatures",
@@ -379,13 +373,7 @@ partial class MainForm : Form
       {
         ShowSignatures(sigs);
       }
-    }
-    catch(OperationCanceledException) { }
-    catch(Exception ex)
-    {
-      MessageBox.Show("Verification failed. The error was: " + ex.Message, "Verification failed",
-                      MessageBoxButtons.OK, MessageBoxIcon.Error);
-    }
+    });
   }
 
   void btnOpen_Click(object sender, EventArgs e)
@@ -444,7 +432,7 @@ partial class MainForm : Form
     }
   }
 
-  PGPSystem pgp;
+  ExeGPG gpg;
   bool keyListInvalidated = true;
 }
 
