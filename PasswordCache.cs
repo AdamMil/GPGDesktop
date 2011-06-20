@@ -35,6 +35,7 @@ public class PasswordCache : IDisposable
   {
     quitEvent = new ManualResetEvent(false);
     thread    = new Thread(ThreadFunc);
+    thread.IsBackground = true; // make this a background thread so it won't keep the process running
     thread.Start();
   }
 

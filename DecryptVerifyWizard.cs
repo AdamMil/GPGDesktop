@@ -230,7 +230,7 @@ public partial class DecryptVerifyWizard : WizardBase
 
           if(destStream == null)
           {
-            destStream = GetNearFile(Path.GetFileNameWithoutExtension(destFile),
+            destStream = GetNearFile(Path.Combine(Path.GetDirectoryName(destFile), Path.GetFileNameWithoutExtension(destFile)),
                                      ".orig" + Path.GetExtension(destFile), "output");
             if(destStream == null) return null;
           }
@@ -297,21 +297,18 @@ public partial class DecryptVerifyWizard : WizardBase
       }
     }
 
-    if(sigFile != null)
-    {
-      try { sigStream = new FileStream(sigFile, FileMode.Open, FileAccess.Read); }
-      catch(Exception ex)
-      {
-        ShowCantOpenFileMessage("signature", sigFile, ex);
-        return null;
-      }
-    }
-
     Signature[] sigs = null;
     try
     {
-      if(sigStream != null) // we have a detached signature
+      if(sigFile != null) // we have a detached signature
       {
+        try { sigStream = new FileStream(sigFile, FileMode.Open, FileAccess.Read); }
+        catch(Exception ex)
+        {
+          ShowCantOpenFileMessage("signature", sigFile, ex);
+          return null;
+        }
+
         string tempFile = null;
 
         try
@@ -370,7 +367,11 @@ public partial class DecryptVerifyWizard : WizardBase
     catch(OperationCanceledException) { }
     catch(Exception ex)
     {
-      MessageBox.Show(ex.Message, "Error occurred", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      PGPUI.ShowErrorDialog("decrypting or verifying", ex);
+    }
+    finally
+    {
+      if(sigStream != null) sigStream.Dispose();
     }
 
     return sigs;
