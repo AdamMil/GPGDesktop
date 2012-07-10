@@ -133,7 +133,7 @@ namespace GPGDesktop
       btnSign.Name = "btnSign";
       btnSign.Size = new System.Drawing.Size(75, 23);
       btnSign.TabIndex = 2;
-      btnSign.Text = "&Sign";
+      btnSign.Text = "Sig&n";
       btnSign.UseVisualStyleBackColor = true;
       btnSign.Click += new System.EventHandler(this.btnSign_Click);
       // 

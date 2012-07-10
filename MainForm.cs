@@ -17,13 +17,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using AdamMil.Security;
 using AdamMil.Security.PGP;
-using AdamMil.Security.UI;
-using System.Collections.Generic;
 using AdamMil.Security.PGP.GPG;
+using AdamMil.Security.UI;
 
 namespace GPGDesktop
 {
@@ -324,8 +325,32 @@ partial class MainForm : Form
     PasswordForm form = new PasswordForm();
     form.EnableRememberPassword = false;
     form.RequirePassword        = true;
-    form.DescriptionText        = "Enter the password used to encrypt the data.";
-    if(form.ShowDialog() == DialogResult.OK) EncryptPad(new EncryptionOptions(form.GetPassword()));
+    while(true)
+    {
+      form.DescriptionText = "Enter the password used to encrypt the data.";
+      form.ClearPassword();
+      if(form.ShowDialog() != DialogResult.OK) break;
+
+      using(System.Security.SecureString pass = form.GetPassword())
+      {
+        form.DescriptionText = "Enter the password a second time to verify it.";
+        form.ClearPassword();
+        if(form.ShowDialog() != DialogResult.OK) break;
+
+        using(System.Security.SecureString pass2 = form.GetPassword())
+        {
+          if(pass.IsEqualTo(pass2))
+          {
+            EncryptPad(new EncryptionOptions(pass));
+            break;
+          }
+          else
+          {
+            MessageBox.Show("The passwords do not match.", "Password mismatch", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          }
+        }
+      }
+    }
   }
 
   void btnDecrypt_Click(object sender, EventArgs e)
