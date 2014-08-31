@@ -1,0 +1,1 @@
+This is an attempt to make encryption simpler to use for the average person by providing a front end to the GNU Privacy Guard. The front end is built on top of my OpenPGP security and UI libraries. It provides a powerful key manager, and wizards to walk the user through basic tasks, such as encryption, signing, decryption, and signature verification.
